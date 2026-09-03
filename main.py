@@ -4,7 +4,10 @@ import logging
 from aiohttp import web
 
 from config import API_ID, API_HASH, BOT_TOKEN, SESSION_STRING, PORT
-from bot.client import bot, assistant, call_py
+from client import bot, assistant, call_py
+import start
+import play
+import controls
 
 logging.basicConfig(level=logging.INFO)
 log = logging.getLogger("main")
@@ -15,7 +18,6 @@ async def health(_):
 
 
 async def run_web_server():
-    """Render's free 'Web Service' type requires something bound to $PORT."""
     app = web.Application()
     app.router.add_get("/", health)
     runner = web.AppRunner(app)
@@ -37,23 +39,16 @@ async def main():
         if not val
     ]
     if missing:
-        raise SystemExit(
-            f"Missing required env vars: {', '.join(missing)}. "
-            "Set them in Render dashboard -> Environment."
-        )
+        raise SystemExit(f"Missing required env vars: {', '.join(missing)}.")
 
     await run_web_server()
-
     await bot.start()
     log.info("Bot client started.")
-
     await assistant.start()
     log.info("Assistant client started.")
-
     await call_py.start()
     log.info("PyTgCalls started. Bot is ready.")
-
-    await asyncio.Event().wait()  # run forever
+    await asyncio.Event().wait()
 
 
 if __name__ == "__main__":
