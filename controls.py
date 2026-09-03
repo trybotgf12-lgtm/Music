@@ -1,14 +1,14 @@
-from pyrogram import Client, filters
+from pyrogram import filters
 from pyrogram.types import Message
 from pytgcalls.types import MediaStream, Update
 from pytgcalls.types.stream import StreamEnded
 
-from bot.client import call_py
-from bot.helpers.queue import pop_next, current, clear_queue, get_queue
+from client import bot, call_py
+from song_queue import pop_next, clear_queue
 
 
-@Client.on_message(filters.command("pause") & filters.group)
-async def pause_cmd(client: Client, message: Message):
+@bot.on_message(filters.command("pause") & filters.group)
+async def pause_cmd(client, message: Message):
     try:
         await call_py.pause(message.chat.id)
         await message.reply_text("⏸ Paused.")
@@ -16,8 +16,8 @@ async def pause_cmd(client: Client, message: Message):
         await message.reply_text(f"❌ `{e}`")
 
 
-@Client.on_message(filters.command("resume") & filters.group)
-async def resume_cmd(client: Client, message: Message):
+@bot.on_message(filters.command("resume") & filters.group)
+async def resume_cmd(client, message: Message):
     try:
         await call_py.resume(message.chat.id)
         await message.reply_text("▶️ Resumed.")
@@ -25,8 +25,8 @@ async def resume_cmd(client: Client, message: Message):
         await message.reply_text(f"❌ `{e}`")
 
 
-@Client.on_message(filters.command(["stop", "end"]) & filters.group)
-async def stop_cmd(client: Client, message: Message):
+@bot.on_message(filters.command(["stop", "end"]) & filters.group)
+async def stop_cmd(client, message: Message):
     chat_id = message.chat.id
     try:
         await call_py.leave_call(chat_id)
@@ -36,8 +36,8 @@ async def stop_cmd(client: Client, message: Message):
     await message.reply_text("⏹ Stopped and left the voice chat.")
 
 
-@Client.on_message(filters.command("skip") & filters.group)
-async def skip_cmd(client: Client, message: Message):
+@bot.on_message(filters.command("skip") & filters.group)
+async def skip_cmd(client, message: Message):
     chat_id = message.chat.id
     nxt = pop_next(chat_id)
     if not nxt:
@@ -57,7 +57,6 @@ async def skip_cmd(client: Client, message: Message):
 
 @call_py.on_update()
 async def on_stream_update(client, update: Update):
-    """Auto-advance the queue when a track finishes."""
     if isinstance(update, StreamEnded):
         chat_id = update.chat_id
         nxt = pop_next(chat_id)
