@@ -1,5 +1,5 @@
-pyrogram==2.0.106
-tgcrypto==1.2.5
+pyrofork==2.3.42
+TgCrypto-pyrofork==1.2.8
 py-tgcalls==2.2.8
 yt-dlp==2024.8.6
 aiohttp==3.9.5
