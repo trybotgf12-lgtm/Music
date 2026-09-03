@@ -1,4 +1,4 @@
-"""In-memory per-chat song queue. Resets on bot restart (fine for free-tier use)."""
+"""In-memory per-chat song queue. Resets on bot restart."""
 
 queues: dict[int, list[dict]] = {}
 
