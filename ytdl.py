@@ -14,7 +14,7 @@ YDL_OPTS = {
     "default_search": "ytsearch",
     "geo_bypass": True,
     "nocheckcertificate": True,
-    "extractor_args": {"youtube": {"player_client": ["android"]}},
+    "extractor_args": {"youtube": {"player_client": ["android", "web", "tv"]}},
 }
 
 if os.path.exists(SECRET_COOKIES_PATH):
