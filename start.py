@@ -1,3 +1,5 @@
+import sys
+
 from pyrogram import filters
 from pyrogram.types import Message
 
@@ -23,6 +25,8 @@ async def start_cmd(client, message: Message):
 @bot.on_message(filters.command("start") & filters.group)
 async def start_group_cmd(client, message: Message):
     await message.reply_text("I'm alive! Use /play <song name> to start playing music.")
+
+
 @bot.on_message()
 async def debug_all(client, message: Message):
-    print(f"DEBUG GOT MESSAGE: {message.text} from {message.chat.id}")
+    print(f"DEBUG GOT MESSAGE: {message.text} from {message.chat.id}", flush=True)
