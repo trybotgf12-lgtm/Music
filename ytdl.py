@@ -1,5 +1,8 @@
 import asyncio
+import os
 import yt_dlp
+
+COOKIES_PATH = "/etc/secrets/cookies.txt"
 
 YDL_OPTS = {
     "format": "bestaudio/best",
@@ -11,11 +14,14 @@ YDL_OPTS = {
     "nocheckcertificate": True,
 }
 
+if os.path.exists(COOKIES_PATH):
+    YDL_OPTS["cookiefile"] = COOKIES_PATH
+
 
 def _extract(query: str) -> dict:
     with yt_dlp.YoutubeDL(YDL_OPTS) as ydl:
         info = ydl.extract_info(query, download=False)
-        if "entries" in info:  # search result
+        if "entries" in info:
             info = info["entries"][0]
         return {
             "title": info.get("title", "Unknown"),
@@ -27,6 +33,5 @@ def _extract(query: str) -> dict:
 
 
 async def resolve_track(query: str) -> dict:
-    """Runs blocking yt-dlp extraction in a thread so it doesn't block the event loop."""
     loop = asyncio.get_event_loop()
     return await loop.run_in_executor(None, _extract, query)
