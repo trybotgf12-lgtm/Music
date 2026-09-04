@@ -1,3 +1,5 @@
+import sys
+
 from pyrogram import Client
 from pytgcalls import PyTgCalls
 
@@ -18,6 +20,8 @@ assistant = Client(
 )
 
 call_py = PyTgCalls(assistant)
+
+
 @bot.on_raw_update()
 async def raw_debug(client, update, users, chats):
-    print(f"RAW UPDATE RECEIVED: {update}")
+    print(f"RAW UPDATE RECEIVED: {update}", flush=True)
