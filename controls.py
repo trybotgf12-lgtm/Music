@@ -70,3 +70,13 @@ async def on_stream_update(client, update: Update):
             await call_py.play(chat_id, MediaStream(nxt["url"]))
         except Exception:
             clear_queue(chat_id)
+@call_py.on_closed_voice_chat()
+async def on_call_closed(client, chat_id):
+    """Auto-rejoin and resume if the call gets unexpectedly closed."""
+    from song_queue import current
+    track = current(chat_id)
+    if track:
+        try:
+            await call_py.play(chat_id, MediaStream(track["url"]))
+        except Exception:
+            pass
