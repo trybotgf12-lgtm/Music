@@ -9,22 +9,21 @@ WRITABLE_COOKIES_PATH = "/tmp/cookies.txt"
 YDL_OPTS = {
     "format": "bestaudio/best",
     "noplaylist": True,
-
-    # Search YouTube when user gives song name
     "default_search": "ytsearch1",
 
-    # Don't spam yt-dlp output into Render logs
     "quiet": True,
     "no_warnings": False,
 
-    # Network settings
     "nocheckcertificate": True,
 
-    # Don't force android/web/tv.
-    # Let current yt-dlp choose its supported clients.
+    "extractor_args": {
+        "youtube": {
+            "player_client": ["default", "web_embedded"]
+        }
+    },
 }
 
-# Use Render Secret File if it exists
+# Load Render Secret File if available
 if os.path.isfile(SECRET_COOKIES_PATH):
     try:
         shutil.copyfile(
@@ -34,12 +33,18 @@ if os.path.isfile(SECRET_COOKIES_PATH):
 
         YDL_OPTS["cookiefile"] = WRITABLE_COOKIES_PATH
 
-        print("INFO: YouTube cookies loaded.")
+        print("INFO: YouTube cookies loaded.", flush=True)
 
     except Exception as e:
-        print(f"WARNING: Could not copy cookies: {e}")
+        print(
+            f"WARNING: Could not load YouTube cookies: {e}",
+            flush=True
+        )
 else:
-    print("INFO: No YouTube cookies file found.")
+    print(
+        "INFO: YouTube cookies file not found.",
+        flush=True
+    )
 
 
 def _extract(query: str) -> dict:
@@ -48,42 +53,58 @@ def _extract(query: str) -> dict:
     if not query:
         raise ValueError("Empty search query")
 
-    # If user gives a YouTube URL, use it directly.
-    # Otherwise search YouTube.
+    # Direct URL or YouTube search
     if query.startswith(("http://", "https://")):
         target = query
     else:
         target = f"ytsearch1:{query}"
 
-    opts = dict(YDL_OPTS)
+    with yt_dlp.YoutubeDL(YDL_OPTS) as ydl:
 
-    with yt_dlp.YoutubeDL(opts) as ydl:
         info = ydl.extract_info(
             target,
             download=False
         )
 
         if not info:
-            raise RuntimeError("yt-dlp returned no information")
+            raise RuntimeError(
+                "yt-dlp returned no information"
+            )
 
-        # ytsearch returns entries
+        # Search result
         if "entries" in info:
             entries = info.get("entries") or []
 
             if not entries:
-                raise RuntimeError("No results found")
+                raise RuntimeError(
+                    "No results found"
+                )
 
             info = entries[0]
 
-        if not info.get("url"):
-            raise RuntimeError("No playable audio URL found")
+        audio_url = info.get("url")
+
+        if not audio_url:
+            raise RuntimeError(
+                "No playable audio URL found"
+            )
 
         return {
-            "title": info.get("title") or "Unknown",
-            "url": info.get("url"),
-            "webpage_url": info.get("webpage_url"),
-            "duration": info.get("duration") or 0,
-            "thumbnail": info.get("thumbnail"),
+            "title": info.get(
+                "title",
+                "Unknown"
+            ),
+            "url": audio_url,
+            "webpage_url": info.get(
+                "webpage_url"
+            ),
+            "duration": info.get(
+                "duration",
+                0
+            ),
+            "thumbnail": info.get(
+                "thumbnail"
+            ),
         }
 
 
