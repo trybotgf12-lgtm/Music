@@ -7,14 +7,13 @@ SECRET_COOKIES_PATH = "/etc/secrets/cookies.txt"
 WRITABLE_COOKIES_PATH = "/tmp/cookies.txt"
 
 YDL_OPTS = {
-    "format": "bestaudio/best",
+    "format": "bestaudio[ext=m4a]/bestaudio/best",
     "noplaylist": True,
     "quiet": True,
     "no_warnings": True,
     "default_search": "ytsearch",
     "geo_bypass": True,
     "nocheckcertificate": True,
-    "extractor_args": {"youtube": {"player_client": ["android"]}},
 }
 
 if os.path.exists(SECRET_COOKIES_PATH):
