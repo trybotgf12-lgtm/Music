@@ -1,4 +1,10 @@
 import asyncio
+
+# Create and set the event loop BEFORE importing client.py,
+# so the Client objects bind to the same loop we run everything on.
+loop = asyncio.new_event_loop()
+asyncio.set_event_loop(loop)
+
 import logging
 
 from aiohttp import web
@@ -52,4 +58,4 @@ async def main():
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    loop.run_until_complete(main())
