@@ -1,8 +1,11 @@
 import asyncio
+import logging
 import os
 import shutil
 import time
 import yt_dlp
+
+log = logging.getLogger("ytdl")
 
 SECRET_COOKIES_PATH = "/etc/secrets/cookies.txt"
 WRITABLE_COOKIES_PATH = "/tmp/cookies.txt"
@@ -18,17 +21,20 @@ YDL_OPTS = {
     "extractor_args": {"youtube": {"player_client": ["default", "web_embedded"]}},
 }
 
-print(f"DEBUG: checking cookies at {SECRET_COOKIES_PATH}", flush=True)
-if os.path.exists(SECRET_COOKIES_PATH):
-    size = os.path.getsize(SECRET_COOKIES_PATH)
-    print(f"DEBUG: cookies file FOUND, size={size} bytes", flush=True)
-    shutil.copyfile(SECRET_COOKIES_PATH, WRITABLE_COOKIES_PATH)
-    YDL_OPTS["cookiefile"] = WRITABLE_COOKIES_PATH
-else:
-    print("DEBUG: cookies file NOT FOUND at that path!", flush=True)
+
+def _setup_cookies():
+    log.info(f"Checking cookies at {SECRET_COOKIES_PATH}")
+    if os.path.exists(SECRET_COOKIES_PATH):
+        size = os.path.getsize(SECRET_COOKIES_PATH)
+        log.info(f"Cookies file FOUND, size={size} bytes")
+        shutil.copyfile(SECRET_COOKIES_PATH, WRITABLE_COOKIES_PATH)
+        YDL_OPTS["cookiefile"] = WRITABLE_COOKIES_PATH
+    else:
+        log.info("Cookies file NOT FOUND at that path!")
 
 
 def _extract(query: str) -> dict:
+    _setup_cookies()  # re-check every time, right before use
     last_error = None
     for attempt in range(3):
         try:
@@ -45,6 +51,7 @@ def _extract(query: str) -> dict:
                 }
         except Exception as e:
             last_error = e
+            log.warning(f"Attempt {attempt+1} failed: {e}")
             time.sleep(1.5)
     raise last_error
 
