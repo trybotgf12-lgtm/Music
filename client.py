@@ -1,5 +1,3 @@
-import sys
-
 from pyrogram import Client
 from pytgcalls import PyTgCalls
 
@@ -9,14 +7,14 @@ bot = Client(
     name="music_bot",
     api_id=API_ID,
     api_hash=API_HASH,
-    bot_token=BOT_TOKEN,
+    bot_token=BOT_TOKEN
 )
 
 assistant = Client(
     name="assistant",
     api_id=API_ID,
     api_hash=API_HASH,
-    session_string=SESSION_STRING,
+    session_string=SESSION_STRING
 )
 
 call_py = PyTgCalls(assistant)
