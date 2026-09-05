@@ -8,7 +8,6 @@ RUN apt-get update && \
 
 WORKDIR /app
 
-# Clone and build the PO Token provider server (runs alongside the bot)
 RUN git clone --depth 1 https://github.com/Brainicism/bgutil-ytdlp-pot-provider.git /opt/bgutil && \
     cd /opt/bgutil/server && \
     npm ci && \
