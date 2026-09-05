@@ -11,7 +11,7 @@ from song_queue import add_to_queue, get_queue, clear_queue
 @bot.on_message(filters.command("play") & filters.group)
 async def play_cmd(client, message: Message):
     if len(message.command) < 2:
-        await message.reply_text("Usage: `/play <song name or YouTube link>`")
+        await message.reply_text("Usage: `/play <song name, Spotify link, or SoundCloud>`")
         return
 
     query = message.text.split(None, 1)[1]
