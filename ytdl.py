@@ -18,23 +18,20 @@ YDL_OPTS = {
     "default_search": "ytsearch",
     "geo_bypass": True,
     "nocheckcertificate": True,
-    "extractor_args": {"youtube": {"player_client": ["default", "web_embedded"]}},
 }
 
 
 def _setup_cookies():
-    log.info(f"Checking cookies at {SECRET_COOKIES_PATH}")
     if os.path.exists(SECRET_COOKIES_PATH):
-        size = os.path.getsize(SECRET_COOKIES_PATH)
-        log.info(f"Cookies file FOUND, size={size} bytes")
         shutil.copyfile(SECRET_COOKIES_PATH, WRITABLE_COOKIES_PATH)
         YDL_OPTS["cookiefile"] = WRITABLE_COOKIES_PATH
+        log.info("Cookies loaded.")
     else:
-        log.info("Cookies file NOT FOUND at that path!")
+        log.info("No cookies file found.")
 
 
 def _extract(query: str) -> dict:
-    _setup_cookies()  # re-check every time, right before use
+    _setup_cookies()
     last_error = None
     for attempt in range(3):
         try:
