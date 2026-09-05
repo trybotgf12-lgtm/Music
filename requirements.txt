@@ -1,8 +1,0 @@
-kurigram==2.2.25
-py-tgcalls==2.2.8
-yt-dlp
-aiohttp==3.9.5
-uvloop==0.19.0; sys_platform != "win32"
-motor==3.5.1
-pymongo==4.8.0
-bgutil-ytdlp-pot-provider
