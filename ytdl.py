@@ -1,6 +1,7 @@
 import asyncio
 import os
 import shutil
+import time
 import yt_dlp
 
 SECRET_COOKIES_PATH = "/etc/secrets/cookies.txt"
@@ -22,17 +23,24 @@ if os.path.exists(SECRET_COOKIES_PATH):
 
 
 def _extract(query: str) -> dict:
-    with yt_dlp.YoutubeDL(YDL_OPTS) as ydl:
-        info = ydl.extract_info(query, download=False)
-        if "entries" in info:
-            info = info["entries"][0]
-        return {
-            "title": info.get("title", "Unknown"),
-            "url": info.get("url"),
-            "webpage_url": info.get("webpage_url"),
-            "duration": info.get("duration", 0),
-            "thumbnail": info.get("thumbnail"),
-        }
+    last_error = None
+    for attempt in range(4):  # try up to 4 times
+        try:
+            with yt_dlp.YoutubeDL(YDL_OPTS) as ydl:
+                info = ydl.extract_info(query, download=False)
+                if "entries" in info:
+                    info = info["entries"][0]
+                return {
+                    "title": info.get("title", "Unknown"),
+                    "url": info.get("url"),
+                    "webpage_url": info.get("webpage_url"),
+                    "duration": info.get("duration", 0),
+                    "thumbnail": info.get("thumbnail"),
+                }
+        except Exception as e:
+            last_error = e
+            time.sleep(1.5)
+    raise last_error
 
 
 async def resolve_track(query: str) -> dict:
