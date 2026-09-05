@@ -10,6 +10,11 @@ log = logging.getLogger("ytdl")
 SECRET_COOKIES_PATH = "/etc/secrets/cookies.txt"
 WRITABLE_COOKIES_PATH = "/tmp/cookies.txt"
 
+USER_AGENT = (
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+    "(KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36"
+)
+
 YDL_OPTS = {
     "format": "bestaudio/best",
     "noplaylist": True,
@@ -18,6 +23,12 @@ YDL_OPTS = {
     "default_search": "ytsearch",
     "geo_bypass": True,
     "nocheckcertificate": True,
+    "http_headers": {
+        "User-Agent": USER_AGENT,
+        "Accept-Language": "en-US,en;q=0.9",
+    },
+    # PO Token provider (bgutil, Node.js) is auto-detected once installed —
+    # no extra extractor_args needed, it registers itself automatically.
 }
 
 
@@ -27,13 +38,13 @@ def _setup_cookies():
         YDL_OPTS["cookiefile"] = WRITABLE_COOKIES_PATH
         log.info("Cookies loaded.")
     else:
-        log.info("No cookies file found.")
+        log.info("No cookies file found — proceeding without cookies.")
 
 
 def _extract(query: str) -> dict:
     _setup_cookies()
     last_error = None
-    for attempt in range(3):
+    for attempt in range(4):
         try:
             with yt_dlp.YoutubeDL(YDL_OPTS) as ydl:
                 info = ydl.extract_info(query, download=False)
@@ -48,8 +59,8 @@ def _extract(query: str) -> dict:
                 }
         except Exception as e:
             last_error = e
-            log.warning(f"Attempt {attempt+1} failed: {e}")
-            time.sleep(1.5)
+            log.warning(f"Attempt {attempt + 1} failed: {e}")
+            time.sleep(2)
     raise last_error
 
 
