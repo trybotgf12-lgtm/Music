@@ -1,5 +1,10 @@
 import asyncio
+import os
+import shutil
 import yt_dlp
+
+SECRET_COOKIES_PATH = "/etc/secrets/cookies.txt"
+WRITABLE_COOKIES_PATH = "/tmp/cookies.txt"
 
 YDL_OPTS = {
     "format": "bestaudio/best",
@@ -9,8 +14,12 @@ YDL_OPTS = {
     "default_search": "ytsearch",
     "geo_bypass": True,
     "nocheckcertificate": True,
-    "extractor_args": {"youtube": {"player_client": ["android"]}},
+    "extractor_args": {"youtube": {"player_client": ["web"]}},
 }
+
+if os.path.exists(SECRET_COOKIES_PATH):
+    shutil.copyfile(SECRET_COOKIES_PATH, WRITABLE_COOKIES_PATH)
+    YDL_OPTS["cookiefile"] = WRITABLE_COOKIES_PATH
 
 
 def _extract(query: str) -> dict:
