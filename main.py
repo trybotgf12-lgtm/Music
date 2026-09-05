@@ -1,7 +1,5 @@
 import asyncio
 
-# Create and set the event loop BEFORE importing client.py,
-# so the Client objects bind to the same loop we run everything on.
 loop = asyncio.new_event_loop()
 asyncio.set_event_loop(loop)
 
@@ -14,6 +12,8 @@ from client import bot, assistant, call_py
 import start
 import play
 import controls
+import tracking
+import broadcast
 
 logging.basicConfig(level=logging.INFO)
 log = logging.getLogger("main")
