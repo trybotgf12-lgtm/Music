@@ -1,5 +1,3 @@
-import sys
-
 from pyrogram import Client
 from pytgcalls import PyTgCalls
 
@@ -20,6 +18,3 @@ assistant = Client(
 )
 
 call_py = PyTgCalls(assistant)
-
-
-
