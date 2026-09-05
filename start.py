@@ -1,5 +1,3 @@
-import sys
-
 from pyrogram import filters
 from pyrogram.types import Message
 
@@ -8,12 +6,13 @@ from client import bot
 START_TEXT = """👋 **Hey, I'm a Telegram Music Bot!**
 
 Add me to a group, promote me as admin, and use:
-• `/play <song name or YouTube link>` — play in voice chat
+• `/play <song name, Spotify link, or SoundCloud>` — play in voice chat
 • `/pause` — pause playback
 • `/resume` — resume playback
 • `/skip` — skip current song
 • `/queue` — show queue
 • `/stop` — stop and leave voice chat
+• `/musicapprove` — (admin only) let a member control playback
 """
 
 
@@ -25,4 +24,3 @@ async def start_cmd(client, message: Message):
 @bot.on_message(filters.command("start") & filters.group)
 async def start_group_cmd(client, message: Message):
     await message.reply_text("I'm alive! Use /play <song name> to start playing music.")
-
